@@ -86,11 +86,12 @@ describe('Server Basic Endpoints', () => {
         });
 
         it('should include custom headers', async () => {
-            const response = await request(app)
-                .get('/ping')
-                .set('X-Custom-Header', 'test-value');
+            const response = await request(app).get('/ping').set('X-Custom-Header', 'test-value');
 
-            expect(response.body.requestInfo.headers).toHaveProperty('x-custom-header', 'test-value');
+            expect(response.body.requestInfo.headers).toHaveProperty(
+                'x-custom-header',
+                'test-value'
+            );
         });
 
         it('should return valid ISO timestamp', async () => {
@@ -112,9 +113,7 @@ describe('Server Basic Endpoints', () => {
         });
 
         it('should include CORS headers', async () => {
-            const response = await request(app)
-                .get('/')
-                .set('Origin', 'http://localhost:5173');
+            const response = await request(app).get('/').set('Origin', 'http://localhost:5173');
 
             expect(response.headers['access-control-allow-origin']).toBeDefined();
         });
@@ -165,11 +164,13 @@ describe('Server Basic Endpoints', () => {
         });
 
         it('should parse valid JSON correctly', async () => {
-            const testData = { username: 'test', email: 'test@example.com', password: 'password123' };
-            
-            const response = await request(app)
-                .post('/api/auth/register')
-                .send(testData);
+            const testData = {
+                username: 'test',
+                email: 'test@example.com',
+                password: 'password123',
+            };
+
+            const response = await request(app).post('/api/auth/register').send(testData);
 
             // Should not be a parsing error (400), might be validation error (500) or success (201)
             expect(response.status).not.toBe(400);
@@ -188,22 +189,22 @@ describe('Server Basic Endpoints', () => {
 
     describe('Request Limits and Performance', () => {
         it('should handle concurrent requests', async () => {
-            const requests = Array(5).fill().map(() => request(app).get('/health'));
+            const requests = Array(5)
+                .fill()
+                .map(() => request(app).get('/health'));
             const responses = await Promise.all(requests);
 
-            responses.forEach(response => {
+            responses.forEach((response) => {
                 expect(response.status).toBe(200);
             });
         });
 
         it('should handle requests with large query strings', async () => {
             const largeQuery = 'x'.repeat(1000);
-            const response = await request(app)
-                .get('/ping')
-                .query({ large: largeQuery });
+            const response = await request(app).get('/ping').query({ large: largeQuery });
 
             expect(response.status).toBe(200);
             expect(response.body.requestInfo.query.large).toBe(largeQuery);
         });
     });
-}); 
+});

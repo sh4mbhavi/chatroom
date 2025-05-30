@@ -29,13 +29,11 @@ describe('Authentication API', () => {
         const validUserData = {
             username: 'testuser',
             email: 'test@example.com',
-            password: 'password123'
+            password: 'password123',
         };
 
         it('should register a new user successfully', async () => {
-            const response = await request(app)
-                .post('/api/auth/register')
-                .send(validUserData);
+            const response = await request(app).post('/api/auth/register').send(validUserData);
 
             expect(response.status).toBe(201);
             expect(response.body).toHaveProperty('_id');
@@ -46,19 +44,15 @@ describe('Authentication API', () => {
         });
 
         it('should hash the password in database', async () => {
-            await request(app)
-                .post('/api/auth/register')
-                .send(validUserData);
+            await request(app).post('/api/auth/register').send(validUserData);
 
             const user = await User.findOne({ email: validUserData.email }).select('+password');
             expect(user.password).not.toBe(validUserData.password);
-            expect(user.password).toMatch(/^\$2[ayb]\$[0-9]{2}\$[A-Za-z0-9.\/]{53}$/); // bcrypt hash pattern
+            expect(user.password).toMatch(/^\$2[ayb]\$[0-9]{2}\$[A-Za-z0-9./]{53}$/); // bcrypt hash pattern
         });
 
         it('should generate a valid JWT token', async () => {
-            const response = await request(app)
-                .post('/api/auth/register')
-                .send(validUserData);
+            const response = await request(app).post('/api/auth/register').send(validUserData);
 
             const { token } = response.body;
             const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
@@ -68,16 +62,14 @@ describe('Authentication API', () => {
 
         it('should reject duplicate email', async () => {
             // Create first user
-            await request(app)
-                .post('/api/auth/register')
-                .send(validUserData);
+            await request(app).post('/api/auth/register').send(validUserData);
 
             // Try to create user with same email
             const response = await request(app)
                 .post('/api/auth/register')
                 .send({
                     ...validUserData,
-                    username: 'differentuser'
+                    username: 'differentuser',
                 });
 
             expect(response.status).toBe(400);
@@ -86,16 +78,14 @@ describe('Authentication API', () => {
 
         it('should reject duplicate username', async () => {
             // Create first user
-            await request(app)
-                .post('/api/auth/register')
-                .send(validUserData);
+            await request(app).post('/api/auth/register').send(validUserData);
 
             // Try to create user with same username
             const response = await request(app)
                 .post('/api/auth/register')
                 .send({
                     ...validUserData,
-                    email: 'different@example.com'
+                    email: 'different@example.com',
                 });
 
             expect(response.status).toBe(400);
@@ -105,9 +95,7 @@ describe('Authentication API', () => {
         it('should handle missing required fields', async () => {
             const invalidData = { email: 'test@example.com' }; // missing username and password
 
-            const response = await request(app)
-                .post('/api/auth/register')
-                .send(invalidData);
+            const response = await request(app).post('/api/auth/register').send(invalidData);
 
             expect(response.status).toBe(500);
             expect(response.body).toHaveProperty('message', 'Server error');
@@ -116,20 +104,16 @@ describe('Authentication API', () => {
         it('should validate email format', async () => {
             const invalidEmailData = {
                 ...validUserData,
-                email: 'invalid-email'
+                email: 'invalid-email',
             };
 
-            const response = await request(app)
-                .post('/api/auth/register')
-                .send(invalidEmailData);
+            const response = await request(app).post('/api/auth/register').send(invalidEmailData);
 
             expect(response.status).toBe(500);
         });
 
         it('should handle empty request body', async () => {
-            const response = await request(app)
-                .post('/api/auth/register')
-                .send({});
+            const response = await request(app).post('/api/auth/register').send({});
 
             expect(response.status).toBe(500);
             expect(response.body).toHaveProperty('message', 'Server error');
@@ -140,23 +124,19 @@ describe('Authentication API', () => {
         const userData = {
             username: 'testuser',
             email: 'test@example.com',
-            password: 'password123'
+            password: 'password123',
         };
 
         beforeEach(async () => {
             // Create a user for login tests
-            await request(app)
-                .post('/api/auth/register')
-                .send(userData);
+            await request(app).post('/api/auth/register').send(userData);
         });
 
         it('should login with valid credentials', async () => {
-            const response = await request(app)
-                .post('/api/auth/login')
-                .send({
-                    email: userData.email,
-                    password: userData.password
-                });
+            const response = await request(app).post('/api/auth/login').send({
+                email: userData.email,
+                password: userData.password,
+            });
 
             expect(response.status).toBe(200);
             expect(response.body).toHaveProperty('_id');
@@ -167,36 +147,30 @@ describe('Authentication API', () => {
         });
 
         it('should set user status to online', async () => {
-            await request(app)
-                .post('/api/auth/login')
-                .send({
-                    email: userData.email,
-                    password: userData.password
-                });
+            await request(app).post('/api/auth/login').send({
+                email: userData.email,
+                password: userData.password,
+            });
 
             const user = await User.findOne({ email: userData.email });
             expect(user.status).toBe('online');
         });
 
         it('should reject invalid email', async () => {
-            const response = await request(app)
-                .post('/api/auth/login')
-                .send({
-                    email: 'nonexistent@example.com',
-                    password: userData.password
-                });
+            const response = await request(app).post('/api/auth/login').send({
+                email: 'nonexistent@example.com',
+                password: userData.password,
+            });
 
             expect(response.status).toBe(401);
             expect(response.body).toHaveProperty('message', 'Invalid credentials');
         });
 
         it('should reject invalid password', async () => {
-            const response = await request(app)
-                .post('/api/auth/login')
-                .send({
-                    email: userData.email,
-                    password: 'wrongpassword'
-                });
+            const response = await request(app).post('/api/auth/login').send({
+                email: userData.email,
+                password: 'wrongpassword',
+            });
 
             expect(response.status).toBe(401);
             expect(response.body).toHaveProperty('message', 'Invalid credentials');
@@ -217,13 +191,11 @@ describe('Authentication API', () => {
 
         beforeEach(async () => {
             // Register and login a user
-            const registerResponse = await request(app)
-                .post('/api/auth/register')
-                .send({
-                    username: 'testuser',
-                    email: 'test@example.com',
-                    password: 'password123'
-                });
+            const registerResponse = await request(app).post('/api/auth/register').send({
+                username: 'testuser',
+                email: 'test@example.com',
+                password: 'password123',
+            });
 
             userToken = registerResponse.body.token;
             userId = registerResponse.body._id;
@@ -239,9 +211,7 @@ describe('Authentication API', () => {
         });
 
         it('should set user status to offline', async () => {
-            await request(app)
-                .post('/api/auth/logout')
-                .set('Authorization', `Bearer ${userToken}`);
+            await request(app).post('/api/auth/logout').set('Authorization', `Bearer ${userToken}`);
 
             const user = await User.findById(userId);
             expect(user.status).toBe('offline');
@@ -249,8 +219,7 @@ describe('Authentication API', () => {
         });
 
         it('should reject request without token', async () => {
-            const response = await request(app)
-                .post('/api/auth/logout');
+            const response = await request(app).post('/api/auth/logout');
 
             expect(response.status).toBe(401);
         });
@@ -288,37 +257,33 @@ describe('Authentication API', () => {
 
     describe('JWT Token Validation', () => {
         it('should generate tokens with correct expiration', async () => {
-            const response = await request(app)
-                .post('/api/auth/register')
-                .send({
-                    username: 'testuser',
-                    email: 'test@example.com',
-                    password: 'password123'
-                });
+            const response = await request(app).post('/api/auth/register').send({
+                username: 'testuser',
+                email: 'test@example.com',
+                password: 'password123',
+            });
 
             const { token } = response.body;
             const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
-            
+
             // Token should be valid for 30 days
             const expirationTime = decoded.exp * 1000;
             const now = Date.now();
             const thirtyDaysInMs = 30 * 24 * 60 * 60 * 1000;
-            
+
             expect(expirationTime - now).toBeGreaterThan(thirtyDaysInMs - 60000); // Allow 1 minute tolerance
         });
 
         it('should include correct user ID in token', async () => {
-            const response = await request(app)
-                .post('/api/auth/register')
-                .send({
-                    username: 'testuser',
-                    email: 'test@example.com',
-                    password: 'password123'
-                });
+            const response = await request(app).post('/api/auth/register').send({
+                username: 'testuser',
+                email: 'test@example.com',
+                password: 'password123',
+            });
 
             const { token, _id } = response.body;
             const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
-            
+
             expect(decoded.id).toBe(_id);
         });
     });
@@ -327,13 +292,11 @@ describe('Authentication API', () => {
         let userToken;
 
         beforeEach(async () => {
-            const response = await request(app)
-                .post('/api/auth/register')
-                .send({
-                    username: 'testuser',
-                    email: 'test@example.com',
-                    password: 'password123'
-                });
+            const response = await request(app).post('/api/auth/register').send({
+                username: 'testuser',
+                email: 'test@example.com',
+                password: 'password123',
+            });
             userToken = response.body.token;
         });
 
@@ -346,8 +309,7 @@ describe('Authentication API', () => {
         });
 
         it('should reject missing authorization header', async () => {
-            const response = await request(app)
-                .post('/api/auth/logout');
+            const response = await request(app).post('/api/auth/logout');
 
             expect(response.status).toBe(401);
         });
@@ -360,4 +322,4 @@ describe('Authentication API', () => {
             expect(response.status).toBe(401);
         });
     });
-}); 
+});

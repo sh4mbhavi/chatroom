@@ -22,7 +22,7 @@ describe('User Model', () => {
         const validUserData = {
             username: 'testuser',
             email: 'test@example.com',
-            password: 'password123'
+            password: 'password123',
         };
 
         it('should create a user with valid data', async () => {
@@ -71,7 +71,7 @@ describe('User Model', () => {
 
             const user2 = new User({
                 ...validUserData,
-                username: 'differentuser'
+                username: 'differentuser',
             });
 
             await expect(user2.save()).rejects.toThrow();
@@ -83,7 +83,7 @@ describe('User Model', () => {
 
             const user2 = new User({
                 ...validUserData,
-                email: 'different@example.com'
+                email: 'different@example.com',
             });
 
             await expect(user2.save()).rejects.toThrow();
@@ -92,7 +92,7 @@ describe('User Model', () => {
         it('should validate email format', async () => {
             const userData = {
                 ...validUserData,
-                email: 'invalid-email'
+                email: 'invalid-email',
             };
 
             const user = new User(userData);
@@ -103,7 +103,7 @@ describe('User Model', () => {
         it('should enforce minimum username length', async () => {
             const userData = {
                 ...validUserData,
-                username: 'ab' // Too short
+                username: 'ab', // Too short
             };
 
             const user = new User(userData);
@@ -114,7 +114,7 @@ describe('User Model', () => {
         it('should enforce minimum password length', async () => {
             const userData = {
                 ...validUserData,
-                password: '12345' // Too short
+                password: '12345', // Too short
             };
 
             const user = new User(userData);
@@ -132,25 +132,27 @@ describe('User Model', () => {
         it('should accept valid status values', async () => {
             const statuses = ['online', 'offline', 'away'];
 
-            for (const status of statuses) {
-                const userData = {
-                    ...validUserData,
-                    email: `test-${status}@example.com`,
-                    username: `testuser-${status}`,
-                    status
-                };
+            await Promise.all(
+                statuses.map(async (status) => {
+                    const userData = {
+                        ...validUserData,
+                        email: `test-${status}@example.com`,
+                        username: `testuser-${status}`,
+                        status,
+                    };
 
-                const user = new User(userData);
-                const savedUser = await user.save();
+                    const user = new User(userData);
+                    const savedUser = await user.save();
 
-                expect(savedUser.status).toBe(status);
-            }
+                    expect(savedUser.status).toBe(status);
+                })
+            );
         });
 
         it('should reject invalid status values', async () => {
             const userData = {
                 ...validUserData,
-                status: 'invalid-status'
+                status: 'invalid-status',
             };
 
             const user = new User(userData);
@@ -164,23 +166,23 @@ describe('User Model', () => {
             const userData = {
                 username: 'testuser',
                 email: 'test@example.com',
-                password: 'plainpassword'
+                password: 'plainpassword',
             };
 
             const user = new User(userData);
             await user.save();
 
             expect(user.password).not.toBe('plainpassword');
-            expect(user.password).toMatch(/^\$2[ayb]\$[0-9]{2}\$[A-Za-z0-9.\/]{53}$/); // bcrypt hash pattern
+            expect(user.password).toMatch(/^\$2[ayb]\$[0-9]{2}\$[A-Za-z0-9./]{53}$/); // bcrypt hash pattern
         });
 
         it('should not hash password if not modified', async () => {
             const user = new User({
                 username: 'testuser',
                 email: 'test@example.com',
-                password: 'password123'
+                password: 'password123',
             });
-            
+
             await user.save();
             const originalHash = user.password;
 
@@ -195,9 +197,9 @@ describe('User Model', () => {
             const user = new User({
                 username: 'testuser',
                 email: 'test@example.com',
-                password: 'password123'
+                password: 'password123',
             });
-            
+
             await user.save();
             const originalHash = user.password;
 
@@ -206,7 +208,7 @@ describe('User Model', () => {
             await user.save();
 
             expect(user.password).not.toBe(originalHash);
-            expect(user.password).toMatch(/^\$2[ayb]\$[0-9]{2}\$[A-Za-z0-9.\/]{53}$/);
+            expect(user.password).toMatch(/^\$2[ayb]\$[0-9]{2}\$[A-Za-z0-9./]{53}$/);
         });
     });
 
@@ -217,7 +219,7 @@ describe('User Model', () => {
             user = new User({
                 username: 'testuser',
                 email: 'test@example.com',
-                password: 'password123'
+                password: 'password123',
             });
             await user.save();
         });
@@ -243,7 +245,7 @@ describe('User Model', () => {
             const user = new User({
                 username: 'testuser',
                 email: 'test@example.com',
-                password: 'password123'
+                password: 'password123',
             });
 
             const savedUser = await user.save();
@@ -257,14 +259,16 @@ describe('User Model', () => {
             const user = new User({
                 username: 'testuser',
                 email: 'test@example.com',
-                password: 'password123'
+                password: 'password123',
             });
 
             await user.save();
             const originalUpdatedAt = user.updatedAt;
 
             // Wait a moment to ensure different timestamp
-            await new Promise(resolve => setTimeout(resolve, 1));
+            await new Promise((resolve) => {
+                setTimeout(resolve, 1);
+            });
 
             user.status = 'online';
             await user.save();
@@ -280,7 +284,7 @@ describe('User Model', () => {
                 username: 'testuser',
                 email: 'test@example.com',
                 password: 'password123',
-                lastSeen: lastSeenDate
+                lastSeen: lastSeenDate,
             });
 
             const savedUser = await user.save();
@@ -292,7 +296,7 @@ describe('User Model', () => {
                 username: 'testuser',
                 email: 'test@example.com',
                 password: 'password123',
-                lastSeen: null
+                lastSeen: null,
             });
 
             const savedUser = await user.save();
@@ -305,11 +309,11 @@ describe('User Model', () => {
             const user = new User({
                 username: 'testuser',
                 email: 'test@example.com',
-                password: 'password123'
+                password: 'password123',
             });
 
             await user.save();
-            
+
             const userWithPassword = await User.findById(user._id).select('+password');
             expect(userWithPassword.password).toBeDefined();
         });
@@ -318,16 +322,16 @@ describe('User Model', () => {
     describe('Indexes', () => {
         it('should create unique index on email', async () => {
             const indexes = await User.collection.getIndexes();
-            
+
             expect(indexes).toHaveProperty('email_1');
             expect(indexes.email_1).toEqual([['email', 1]]);
         });
 
         it('should create unique index on username', async () => {
             const indexes = await User.collection.getIndexes();
-            
+
             expect(indexes).toHaveProperty('username_1');
             expect(indexes.username_1).toEqual([['username', 1]]);
         });
     });
-}); 
+});

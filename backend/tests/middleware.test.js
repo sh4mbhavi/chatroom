@@ -27,7 +27,7 @@ describe('Middleware Tests', () => {
             const user = new User({
                 username: 'testuser',
                 email: 'test@example.com',
-                password: 'password123'
+                password: 'password123',
             });
             await user.save();
 
@@ -36,4 +36,4 @@ describe('Middleware Tests', () => {
             expect(foundUser.username).toBe('testuser');
         });
     });
-}); 
+});

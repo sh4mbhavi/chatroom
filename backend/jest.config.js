@@ -1,10 +1,7 @@
 module.exports = {
     testEnvironment: 'node',
     setupFilesAfterEnv: ['<rootDir>/tests/setup.js'],
-    testMatch: [
-        '<rootDir>/tests/**/*.test.js',
-        '<rootDir>/tests/**/*.test.ts'
-    ],
+    testMatch: ['<rootDir>/tests/**/*.test.js', '<rootDir>/tests/**/*.test.ts'],
     collectCoverageFrom: [
         'controllers/**/*.js',
         'middleware/**/*.js',
@@ -12,12 +9,12 @@ module.exports = {
         'routes/**/*.js',
         'socketHandlers/**/*.js',
         'config/**/*.js',
-        'server.js'
+        'server.js',
     ],
     coverageDirectory: 'coverage',
     coverageReporters: ['text', 'lcov', 'html'],
     verbose: true,
     forceExit: true,
     detectOpenHandles: true,
-    testTimeout: 30000
+    testTimeout: 30000,
 };
