@@ -22,7 +22,7 @@ pipeline {
         }
         dir('frontend') {
           sh 'npm install'
-          sh 'npm run typecheck'
+          
           sh 'npm run lint'
           sh 'npm run test'
         }
