@@ -17,8 +17,8 @@ interface PingResult {
 }
 
 const SERVER_URL = import.meta.env.VITE_NODE_ENV === 'production' 
-  ? (import.meta.env.VITE_API_URL || 'http://localhost:9999')  // Fallback for production
-  : 'http://localhost:9999';
+  ? (import.meta.env.VITE_API_URL || 'http://3.104.38.43:223')  // Fallback for production
+  : 'http://3.104.38.43:223';
 
 export async function pingServer(timeout: number = 5000): Promise<PingResult> {
   const startTime = Date.now();

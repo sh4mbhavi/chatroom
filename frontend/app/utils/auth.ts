@@ -25,8 +25,8 @@ interface RegisterData {
 }
 
 const SERVER_URL = import.meta.env.VITE_NODE_ENV === 'production' 
-  ? (import.meta.env.VITE_API_URL || 'http://localhost:9999')
-  : 'http://localhost:9999';
+  ? (import.meta.env.VITE_API_URL || 'http://3.104.38.43:223')
+  : 'http://3.104.38.43:223';
 
 const API_BASE = `${SERVER_URL}/api/auth`;
 

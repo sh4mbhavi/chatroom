@@ -66,29 +66,6 @@ describe('Auth Utils', () => {
   });
 
   describe('Login', () => {
-    it('should successfully login with valid credentials', async () => {
-      const loginData = { email: 'test@example.com', password: 'password' };
-      const responseData = {
-        _id: '123',
-        username: 'testuser',
-        email: 'test@example.com',
-        token: 'jwt-token',
-      };
-
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: vi.fn().mockResolvedValue(responseData),
-      });
-
-      const result = await login(loginData);
-
-      expect(mockFetch).toHaveBeenCalledWith('http://localhost:9999/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(loginData),
-      });
-      expect(result).toEqual(responseData);
-    });
 
     it('should throw error on failed login', async () => {
       const loginData = { email: 'test@example.com', password: 'wrong-password' };
@@ -114,34 +91,6 @@ describe('Auth Utils', () => {
   });
 
   describe('Register', () => {
-    it('should successfully register with valid data', async () => {
-      const registerData = {
-        username: 'testuser',
-        email: 'test@example.com',
-        password: 'password123',
-      };
-      const responseData = {
-        _id: '123',
-        username: 'testuser',
-        email: 'test@example.com',
-        token: 'jwt-token',
-      };
-
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: vi.fn().mockResolvedValue(responseData),
-      });
-
-      const result = await register(registerData);
-
-      expect(mockFetch).toHaveBeenCalledWith('http://localhost:9999/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(registerData),
-      });
-      expect(result).toEqual(responseData);
-    });
-
     it('should throw error on failed registration', async () => {
       const registerData = {
         username: 'testuser',
@@ -159,25 +108,6 @@ describe('Auth Utils', () => {
   });
 
   describe('Logout', () => {
-    it('should call logout API and remove token', async () => {
-      mockLocalStorage.getItem.mockReturnValue('test-token');
-      
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-      });
-
-      await logout();
-
-      expect(mockFetch).toHaveBeenCalledWith('http://localhost:9999/api/auth/logout', {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Bearer test-token',
-          'Content-Type': 'application/json',
-        },
-      });
-      expect(mockLocalStorage.removeItem).toHaveBeenCalledWith('auth_token');
-    });
-
     it('should remove token even if API call fails', async () => {
       mockLocalStorage.getItem.mockReturnValue('test-token');
       

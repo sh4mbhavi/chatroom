@@ -165,7 +165,7 @@ app/
 Create a `.env` file in the root directory:
 
 ```env
-VITE_API_URL=http://localhost:9999
+VITE_API_URL=http://3.104.38.43:223
 VITE_NODE_ENV=development
 ```
 
