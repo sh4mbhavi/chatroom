@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - backend
+      - frontend
+    restart: unless-stopped
+    networks:
+      - chatroom-network
+
+  backend: 
+    image: sh4mbhavi9/chatroom-backend:1.0.0
+    ports:
+      - "223:9999"
+    env_file:
+      - ./backend/.env.prod
+    restart: 
+      unless-stopped
+    networks:
+      - chatroom-network
+
+  frontend:
+    image: sh4mbhavi9/chatroom-frontend:1.0.0
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./frontend/.env.prod
+    restart:
+      unless-stopped
+    networks:
+      - chatroom-network
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    restart: unless-stopped
+    networks:
+      - chatroom-network
+
+  node-exporter:
+    image: prom/node-exporter
+    container_name: node-exporter
+    ports:
+      - "9100:9100"
+    restart: unless-stopped
+    networks:
+      - chatroom-network
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3001:3001"
+    environment:
+      - GF_SERVER_HTTP_PORT=3001
+    restart: unless-stopped
+    networks:
+      - chatroom-network
+
+
+networks:
+  chatroom-network:
+    driver: bridge
