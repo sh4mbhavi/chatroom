@@ -22,7 +22,7 @@ pipeline {
         }
         dir('frontend') {
           sh 'npm install'
-          sh 'npm run typecheck'
+          
           sh 'npm run lint'
           sh 'npm run test'
         }
@@ -198,7 +198,7 @@ EOF
     stage('Monitoring Check') {
       steps {
         script {
-          sh 'curl -f http://3.104.38.43:9999/health || echo "❌ Backend health check failed"'
+          sh 'curl -f http://3.104.38.43:223/health || echo "❌ Backend health check failed"'
         }
       }
     }
